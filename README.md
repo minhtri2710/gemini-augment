@@ -24,7 +24,7 @@ The rewrite preserves the following behavior:
 - `commands/augment.toml`: thin `/augment` command entrypoint
 - `skills/prompt-leverage/`: bundled agent skill for deeper prompt-structuring guidance
 - `src/`: TypeScript logic ported from `pi-augment`
-- `dist/`: compiled runtime files
+- `dist/`: compiled artifacts, including the bundled self-contained MCP runtime shipped with the extension
 
 ## MCP tools
 
@@ -68,6 +68,8 @@ npm run smoke-test
 ```
 
 Then update `package.json`, `gemini-extension.json`, and `CHANGELOG.md` together so the published version and release notes stay aligned.
+
+Run `npm run build` before publishing so the bundled `dist/index.js` shipped to Gemini stays in sync with the source.
 
 ## Usage
 

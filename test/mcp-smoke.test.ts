@@ -95,7 +95,7 @@ function resolveServerLaunch(): {
 		? {
 				rootDir,
 				command: "node",
-				args: [path.join(rootDir, "dist", "src", "index.js")],
+				args: [path.join(rootDir, "dist", "index.js")],
 			}
 		: {
 				rootDir,
