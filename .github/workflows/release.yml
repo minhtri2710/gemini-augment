@@ -10,7 +10,43 @@ permissions:
   contents: write
 
 jobs:
-  build-and-release:
+  verify:
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Sync release version from tag
+        env:
+          VERSION: ${{ github.ref_name }}
+        run: |
+          node .github/scripts/sync-release-version.mjs
+          npx biome format --write package.json package-lock.json gemini-extension.json
+
+      - name: Verify release build
+        run: npm run check
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: verify
     runs-on: ubuntu-latest
 
     steps:
@@ -28,23 +64,10 @@ jobs:
 
       - name: Sync release version from tag
         env:
-          GITHUB_REF_NAME: ${{ github.ref_name }}
+          VERSION: ${{ github.ref_name }}
         run: |
-          export VERSION="${GITHUB_REF_NAME#v}"
-          node -e '
-          const fs = require("fs");
-          const version = process.env.VERSION;
-          for (const file of ["package.json", "package-lock.json", "gemini-extension.json"]) {
-            const data = JSON.parse(fs.readFileSync(file, "utf8"));
-            data.version = version;
-            if (file === "package-lock.json" && data.packages?.[""]) {
-              data.packages[""] = { ...data.packages[""], version };
-            }
-            fs.writeFileSync(file, `${JSON.stringify(data, null, "\t")}\n`);
-          }
-          '
+          node .github/scripts/sync-release-version.mjs
           npx biome format --write package.json package-lock.json gemini-extension.json
-        shell: bash
 
       - name: Verify release build
         run: npm run check
@@ -53,8 +76,8 @@ jobs:
         env:
           GITHUB_REF_NAME: ${{ github.ref_name }}
         run: |
-          ASSET_NAME="gemini-augment-${GITHUB_REF_NAME}.tar.gz"
-          tar -czf "$ASSET_NAME" \
+          ASSET_BASE="gemini-augment-${GITHUB_REF_NAME}"
+          tar -czf "${ASSET_BASE}.tar.gz" \
             dist \
             commands \
             skills \
@@ -64,10 +87,21 @@ jobs:
             GEMINI.md \
             README.md \
             CHANGELOG.md
-          printf 'ASSET_NAME=%s\n' "$ASSET_NAME" >> "$GITHUB_ENV"
+          zip -r "${ASSET_BASE}.zip" \
+            dist \
+            commands \
+            skills \
+            gemini-extension.json \
+            package.json \
+            package-lock.json \
+            GEMINI.md \
+            README.md \
+            CHANGELOG.md
+          printf 'ASSET_TGZ=%s\n' "${ASSET_BASE}.tar.gz" >> "$GITHUB_ENV"
+          printf 'ASSET_ZIP=%s\n' "${ASSET_BASE}.zip" >> "$GITHUB_ENV"
         shell: bash
 
-      - name: Create GitHub release and upload asset
+      - name: Create GitHub release and upload assets
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -75,5 +109,6 @@ jobs:
             --generate-notes \
             --title "Release ${{ github.ref_name }}" \
             --notes "See CHANGELOG.md for release details." \
-            "$ASSET_NAME"
+            "$ASSET_TGZ" \
+            "$ASSET_ZIP"
         shell: bash
