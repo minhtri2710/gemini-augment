@@ -1,6 +1,6 @@
 {
 	"name": "gemini-augment",
-	"version": "0.2.2",
+	"version": "0.2.3",
 	"description": "Augment-style prompt rewriting for Gemini CLI via /augment.",
 	"contextFileName": "GEMINI.md",
 	"mcpServers": {

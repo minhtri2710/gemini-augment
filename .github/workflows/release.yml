@@ -43,6 +43,7 @@ jobs:
             fs.writeFileSync(file, `${JSON.stringify(data, null, "\t")}\n`);
           }
           '
+          npx biome format --write package.json package-lock.json gemini-extension.json
         shell: bash
 
       - name: Verify release build

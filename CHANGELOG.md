@@ -6,6 +6,11 @@ The format is based on Keep a Changelog, and this project follows Semantic Versi
 
 ## [Unreleased]
 
+## [0.2.3] - 2026-04-08
+
+### Fixed
+- Run Biome formatting after syncing tag versions in the release workflow so generated JSON matches repository formatting rules before CI checks.
+
 ## [0.2.2] - 2026-04-08
 
 ### Fixed
