@@ -6,6 +6,11 @@ The format is based on Keep a Changelog, and this project follows Semantic Versi
 
 ## [Unreleased]
 
+## [0.2.4] - 2026-04-08
+
+### Fixed
+- Update the bundled prompt-leverage skill guidance to reference the repo's deterministic MCP rewrite flow instead of a nonexistent Python helper script.
+
 ## [0.2.3] - 2026-04-08
 
 ### Fixed

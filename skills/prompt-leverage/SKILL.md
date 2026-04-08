@@ -55,7 +55,7 @@ When the user asks for a hook, model it as a pre-processing layer:
 4. Return the upgraded prompt for execution.
 5. Optionally keep a diff or summary of injected structure.
 
-Use `scripts/augment_prompt.py` when a deterministic first-pass rewrite is helpful.
+Use the deterministic `prepare_augment_rewrite` MCP tool when a structured first-pass rewrite is helpful.
 
 ## Quality Bar
 
