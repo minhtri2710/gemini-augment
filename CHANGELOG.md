@@ -6,6 +6,11 @@ The format is based on Keep a Changelog, and this project follows Semantic Versi
 
 ## [Unreleased]
 
+## [0.2.2] - 2026-04-08
+
+### Fixed
+- Preserve tab-indented JSON formatting in the release workflow so `biome check` passes after syncing version metadata from tags.
+
 ## [0.2.1] - 2026-04-08
 
 ### Added

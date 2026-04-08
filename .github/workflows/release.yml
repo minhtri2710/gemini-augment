@@ -40,7 +40,7 @@ jobs:
             if (file === "package-lock.json" && data.packages?.[""]) {
               data.packages[""] = { ...data.packages[""], version };
             }
-            fs.writeFileSync(file, `${JSON.stringify(data, null, 2)}\n`);
+            fs.writeFileSync(file, `${JSON.stringify(data, null, "\t")}\n`);
           }
           '
         shell: bash
