@@ -67,10 +67,13 @@ async function resolveGitBranch(cwd: string): Promise<string | undefined> {
 		);
 		const branch = stdout.trim();
 		return branch || undefined;
-	} catch {
+	} catch (error) {
 		// Silently gracefully degrade if git is unavailable or the directory
 		// is not a git repository. Workspace context is optional and failing
 		// here should not block execution.
+		if (process.env.DEBUG || process.env.GEMINI_DEBUG) {
+			console.debug("Failed to resolve git branch:", error);
+		}
 		return undefined;
 	}
 }

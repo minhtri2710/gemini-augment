@@ -95,12 +95,12 @@ function resolveServerLaunch(): {
 		? {
 				rootDir,
 				command: "node",
-				args: [path.join(rootDir, "dist", "src", "server.js")],
+				args: [path.join(rootDir, "dist", "src", "index.js")],
 			}
 		: {
 				rootDir,
 				command: "node",
-				args: ["--import=tsx", path.join(rootDir, "src", "server.ts")],
+				args: ["--import=tsx", path.join(rootDir, "src", "index.ts")],
 			};
 }
 

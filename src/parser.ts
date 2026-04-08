@@ -1,17 +1,5 @@
 const EXECUTION_CONTRACT_OPEN = "<execution_contract>";
 const EXECUTION_CONTRACT_CLOSE = "</execution_contract>";
-const RAW_EXECUTION_TAGS = [
-	"task",
-	"context",
-	"constraints",
-	"diagnosis",
-	"fix",
-	"work_style",
-	"tool_rules",
-	"verification",
-	"done_criteria",
-	"deliverable",
-] as const;
 
 export function normalizeAugmentOutput(responseText: string): string {
 	const text = normalizePromptText(responseText);
@@ -96,47 +84,25 @@ function sliceRawExecutionContract(text: string): string | null {
 }
 
 function findFirstTagStart(text: string): number {
-	let start = -1;
-
-	for (const tag of RAW_EXECUTION_TAGS) {
-		const index = text.indexOf(`<${tag}>`);
-		if (index === -1) continue;
-		if (start === -1 || index < start) start = index;
-	}
-
-	return start;
+	const match = text.match(/<[a-z_]+>/i);
+	return match?.index ?? -1;
 }
 
 function findLastTagEnd(text: string): number {
-	let end = -1;
-
-	for (const tag of RAW_EXECUTION_TAGS) {
-		const close = `</${tag}>`;
-		const index = text.lastIndexOf(close);
-		if (index === -1) continue;
-
-		const candidateEnd = index + close.length;
-		if (candidateEnd > end) end = candidateEnd;
-	}
-
-	return end;
+	const matches = [...text.matchAll(/<\/[a-z_]+>/gi)];
+	if (matches.length === 0) return -1;
+	const lastMatch = matches[matches.length - 1];
+	return lastMatch.index + lastMatch[0].length;
 }
 
 function looksLikeExecutionContract(text: string): boolean {
-	for (const tag of ["task", "context"]) {
-		if (!hasWrappedTag(text, tag)) return false;
-	}
+	const hasTask = /<task>[\s\S]*?<\/task>/i.test(text);
+	const hasContext = /<context>[\s\S]*?<\/context>/i.test(text);
+	if (!hasTask || !hasContext) return false;
 
-	let matches = 0;
-	for (const tag of RAW_EXECUTION_TAGS) {
-		if (hasWrappedTag(text, tag)) matches += 1;
-	}
-
-	return matches >= 2;
-}
-
-function hasWrappedTag(text: string, tag: string): boolean {
-	return new RegExp(`<${tag}>[\\s\\S]*?</${tag}>`).test(text);
+	const matches = [...text.matchAll(/<([a-z_]+)>[\s\S]*?<\/\1>/gi)];
+	const uniqueTags = new Set(matches.map((m) => m[1].toLowerCase()));
+	return uniqueTags.size >= 2;
 }
 
 export function stripOuterMarkdownFences(text: string): string {

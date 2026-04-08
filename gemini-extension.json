@@ -6,7 +6,7 @@
 	"mcpServers": {
 		"gemini-augment": {
 			"command": "node",
-			"args": ["${extensionPath}${/}dist${/}src${/}server.js"],
+			"args": ["${extensionPath}${/}dist${/}src${/}index.js"],
 			"cwd": "${extensionPath}"
 		}
 	}

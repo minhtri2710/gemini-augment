@@ -42,6 +42,29 @@ void test("intent classification still prefers execution when the draft asks to 
 	);
 });
 
+void test("intent classification resolves complex multi-intent drafts predictably", () => {
+	// Matches "add tests" (test-fix), "document" (docs), and "bug fix" (debug).
+	// Because TEST_FIX_RULE is higher in STRONG_INTENT_RULES, it should resolve to test-fix.
+	assert.equal(
+		detectTaskIntent("Add tests to document the bug fix."),
+		"test-fix",
+	);
+
+	// Matches "fix the bug" (debug) and "document it" (docs).
+	// DEBUG_RULE > DOCS_RULE
+	assert.equal(
+		detectTaskIntent("Fix the bug and document it in the readme."),
+		"debug",
+	);
+
+	// Matches "refactor" (refactor) and "tests" (test-fix).
+	// TEST_FIX_RULE > REFACTOR_RULE
+	assert.equal(
+		detectTaskIntent("Refactor the component to fix failing tests."),
+		"test-fix",
+	);
+});
+
 void test("rewrite mode resolution honors forced and auto modes", () => {
 	assert.equal(resolveEffectiveRewriteMode("plain", "implement"), "plain");
 	assert.equal(
