@@ -1,0 +1,19 @@
+description = "Rewrite a draft prompt into a stronger Augment-style version."
+prompt = """
+Use the `prepare_augment_rewrite` tool exactly once with the user's draft below.
+
+If the current conversation contains recent context that materially changes the rewrite, include up to 4 short excerpts as `recentConversation` entries with `role` and `text`. Otherwise omit that field.
+
+Treat recent conversation as optional grounding only. If the draft is already self-contained, or the surrounding chat is not clearly relevant, ignore the conversation and rewrite from the draft plus returned workspace metadata.
+
+Then follow the returned rewrite specification faithfully and produce the final rewritten prompt.
+
+After drafting the rewritten prompt, call `normalize_augment_output` exactly once on your drafted output.
+
+Output requirements:
+- Return only the normalized rewritten prompt.
+- Do not add commentary, labels, code fences, or metadata unless the rewritten prompt itself truly requires them.
+
+Draft:
+{{args}}
+"""
