@@ -6,6 +6,8 @@ The format is based on Keep a Changelog, and this project follows Semantic Versi
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-04-08
+
 ### Added
 - Initial Gemini CLI extension port of the `pi-augment` workflow.
 - TypeScript MCP server for deterministic rewrite preparation and output normalization.
