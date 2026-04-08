@@ -1,12 +1,13 @@
 {
-  "name": "gemini-augment",
-  "version": "0.1.0",
-  "description": "Augment-style prompt rewriting for Gemini CLI via /augment.",
-  "contextFileName": "GEMINI.md",
-  "mcpServers": {
-    "gemini-augment": {
-      "command": "node",
-      "args": ["${extensionPath}/dist/index.js"]
-    }
-  }
+	"name": "gemini-augment",
+	"version": "0.1.0",
+	"description": "Augment-style prompt rewriting for Gemini CLI via /augment.",
+	"contextFileName": "GEMINI.md",
+	"mcpServers": {
+		"gemini-augment": {
+			"command": "node",
+			"args": ["${extensionPath}${/}dist${/}index.js"],
+			"cwd": "${extensionPath}"
+		}
+	}
 }
