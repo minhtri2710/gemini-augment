@@ -6,6 +6,11 @@ The format is based on Keep a Changelog, and this project follows Semantic Versi
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-04-08
+
+### Added
+- GitHub Actions workflow to build tagged releases, package extension assets, and publish GitHub releases automatically.
+
 ## [0.2.0] - 2026-04-08
 
 ### Added
