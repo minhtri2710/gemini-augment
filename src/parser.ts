@@ -1,159 +1,177 @@
 const EXECUTION_CONTRACT_OPEN = "<execution_contract>";
 const EXECUTION_CONTRACT_CLOSE = "</execution_contract>";
 const RAW_EXECUTION_TAGS = [
-  "task",
-  "context",
-  "constraints",
-  "diagnosis",
-  "fix",
-  "work_style",
-  "tool_rules",
-  "verification",
-  "done_criteria",
-  "deliverable",
+	"task",
+	"context",
+	"constraints",
+	"diagnosis",
+	"fix",
+	"work_style",
+	"tool_rules",
+	"verification",
+	"done_criteria",
+	"deliverable",
 ] as const;
 
 export function normalizeAugmentOutput(responseText: string): string {
-  const text = normalizePromptText(responseText);
-  if (!text) {
-    throw new Error("Augment received empty output.");
-  }
+	const text = normalizePromptText(responseText);
+	if (!text) {
+		throw new Error("Augment received empty output.");
+	}
 
-  const primary = extractWrappedBlock(text, "<augment-enhanced-prompt>", "</augment-enhanced-prompt>");
-  if (primary !== null) return primary;
+	const primary = extractWrappedBlock(
+		text,
+		"<augment-enhanced-prompt>",
+		"</augment-enhanced-prompt>",
+	);
+	if (primary !== null) return primary;
 
-  const executionContract = extractWrappedBlock(
-    text,
-    EXECUTION_CONTRACT_OPEN,
-    EXECUTION_CONTRACT_CLOSE
-  );
-  if (executionContract !== null) return executionContract;
+	const executionContract = extractWrappedBlock(
+		text,
+		EXECUTION_CONTRACT_OPEN,
+		EXECUTION_CONTRACT_CLOSE,
+	);
+	if (executionContract !== null) return executionContract;
 
-  const rawExecutionContract = extractRawExecutionContract(text);
-  if (rawExecutionContract !== null) return rawExecutionContract;
+	const rawExecutionContract = extractRawExecutionContract(text);
+	if (rawExecutionContract !== null) return rawExecutionContract;
 
-  const stripped = stripOuterMarkdownFences(text);
-  const strippedPrimary = extractWrappedBlock(
-    stripped,
-    "<augment-enhanced-prompt>",
-    "</augment-enhanced-prompt>"
-  );
-  if (strippedPrimary !== null) return strippedPrimary;
+	const stripped = stripOuterMarkdownFences(text);
+	const strippedPrimary = extractWrappedBlock(
+		stripped,
+		"<augment-enhanced-prompt>",
+		"</augment-enhanced-prompt>",
+	);
+	if (strippedPrimary !== null) return strippedPrimary;
 
-  const strippedExecution = extractWrappedBlock(
-    stripped,
-    EXECUTION_CONTRACT_OPEN,
-    EXECUTION_CONTRACT_CLOSE
-  );
-  if (strippedExecution !== null) return strippedExecution;
+	const strippedExecution = extractWrappedBlock(
+		stripped,
+		EXECUTION_CONTRACT_OPEN,
+		EXECUTION_CONTRACT_CLOSE,
+	);
+	if (strippedExecution !== null) return strippedExecution;
 
-  const strippedRawExecution = extractRawExecutionContract(stripped);
-  if (strippedRawExecution !== null) return strippedRawExecution;
+	const strippedRawExecution = extractRawExecutionContract(stripped);
+	if (strippedRawExecution !== null) return strippedRawExecution;
 
-  return stripLeadingPreamble(stripped);
+	return stripLeadingPreamble(stripped);
 }
 
-function extractWrappedBlock(text: string, open: string, close: string): string | null {
-  if (!text) return null;
+function extractWrappedBlock(
+	text: string,
+	open: string,
+	close: string,
+): string | null {
+	if (!text) return null;
 
-  const pattern = new RegExp(escapeRegExp(open) + "([\\s\\S]*?)" + escapeRegExp(close));
-  const match = pattern.exec(text);
-  if (!match) return null;
+	const pattern = new RegExp(
+		`${escapeRegExp(open)}([\\s\\S]*?)${escapeRegExp(close)}`,
+	);
+	const match = pattern.exec(text);
+	if (!match) return null;
 
-  const extracted = normalizePromptText(match[1] ?? "");
-  return extracted || null;
+	const extracted = normalizePromptText(match[1] ?? "");
+	return extracted || null;
 }
 
 function extractRawExecutionContract(text: string): string | null {
-  if (!text) return null;
+	if (!text) return null;
 
-  const block = sliceRawExecutionContract(text);
-  if (!block) return null;
-  if (!looksLikeExecutionContract(block)) return null;
+	const block = sliceRawExecutionContract(text);
+	if (!block) return null;
+	if (!looksLikeExecutionContract(block)) return null;
 
-  return block;
+	return block;
 }
 
 function sliceRawExecutionContract(text: string): string | null {
-  const start = findFirstTagStart(text);
-  if (start === -1) return null;
+	const start = findFirstTagStart(text);
+	if (start === -1) return null;
 
-  const end = findLastTagEnd(text);
-  if (end === -1 || end <= start) return null;
+	const end = findLastTagEnd(text);
+	if (end === -1 || end <= start) return null;
 
-  const block = normalizePromptText(text.slice(start, end));
-  return block || null;
+	const block = normalizePromptText(text.slice(start, end));
+	return block || null;
 }
 
 function findFirstTagStart(text: string): number {
-  let start = -1;
+	let start = -1;
 
-  for (const tag of RAW_EXECUTION_TAGS) {
-    const index = text.indexOf(`<${tag}>`);
-    if (index === -1) continue;
-    if (start === -1 || index < start) start = index;
-  }
+	for (const tag of RAW_EXECUTION_TAGS) {
+		const index = text.indexOf(`<${tag}>`);
+		if (index === -1) continue;
+		if (start === -1 || index < start) start = index;
+	}
 
-  return start;
+	return start;
 }
 
 function findLastTagEnd(text: string): number {
-  let end = -1;
+	let end = -1;
 
-  for (const tag of RAW_EXECUTION_TAGS) {
-    const close = `</${tag}>`;
-    const index = text.lastIndexOf(close);
-    if (index === -1) continue;
+	for (const tag of RAW_EXECUTION_TAGS) {
+		const close = `</${tag}>`;
+		const index = text.lastIndexOf(close);
+		if (index === -1) continue;
 
-    const candidateEnd = index + close.length;
-    if (candidateEnd > end) end = candidateEnd;
-  }
+		const candidateEnd = index + close.length;
+		if (candidateEnd > end) end = candidateEnd;
+	}
 
-  return end;
+	return end;
 }
 
 function looksLikeExecutionContract(text: string): boolean {
-  for (const tag of ["task", "context"]) {
-    if (!hasWrappedTag(text, tag)) return false;
-  }
+	for (const tag of ["task", "context"]) {
+		if (!hasWrappedTag(text, tag)) return false;
+	}
 
-  let matches = 0;
-  for (const tag of RAW_EXECUTION_TAGS) {
-    if (hasWrappedTag(text, tag)) matches += 1;
-  }
+	let matches = 0;
+	for (const tag of RAW_EXECUTION_TAGS) {
+		if (hasWrappedTag(text, tag)) matches += 1;
+	}
 
-  return matches >= 2;
+	return matches >= 2;
 }
 
 function hasWrappedTag(text: string, tag: string): boolean {
-  return new RegExp(`<${tag}>[\\s\\S]*?</${tag}>`).test(text);
+	return new RegExp(`<${tag}>[\\s\\S]*?</${tag}>`).test(text);
 }
 
 export function stripOuterMarkdownFences(text: string): string {
-  let result = text.replace(/^```[\w-]*\n?/, "");
-  result = result.replace(/\n?```$/, "");
-  return result.trim();
+	let result = text.trim();
+	result = result.replace(/^```[\w-]*\n?/, "");
+	result = result.replace(/\n?```$/, "");
+	return result.trim();
 }
 
 function stripLeadingPreamble(text: string): string {
-  const normalized = normalizePromptText(text);
-  if (!normalized) return normalized;
+	const normalized = normalizePromptText(text);
+	if (!normalized) return normalized;
 
-  const withoutLabel = normalized.replace(
-    /^(?:here(?:'s| is) (?:the )?(?:rewritten|enhanced|normalized) prompt:?|(?:rewritten|enhanced|normalized) prompt:?|output:)\s*/i,
-    ""
-  );
-  const cleaned = stripOuterMarkdownFences(withoutLabel);
-  return cleaned.trim();
+	const fenceMatch = normalized.match(
+		/^(?:[\s\S]*?)\n?```[\w-]*\n([\s\S]*?)\n```\s*$/,
+	);
+	if (fenceMatch) {
+		return fenceMatch[1].trim();
+	}
+
+	const withoutLabel = normalized.replace(
+		/^(?:here(?:'s| is) (?:the )?(?:rewritten|enhanced|normalized) prompt:?|(?:rewritten|enhanced|normalized) prompt:?|output:)\s*/i,
+		"",
+	);
+	const cleaned = stripOuterMarkdownFences(withoutLabel);
+	return cleaned.trim();
 }
 
 function normalizePromptText(text: string): string {
-  return text
-    .replace(/^\uFEFF/, "")
-    .replace(/\r\n/g, "\n")
-    .trim();
+	return text
+		.replace(/^\uFEFF/, "")
+		.replace(/\r\n/g, "\n")
+		.trim();
 }
 
 function escapeRegExp(value: string): string {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+	return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }

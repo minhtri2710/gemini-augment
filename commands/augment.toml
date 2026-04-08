@@ -1,4 +1,4 @@
-description = "Rewrite a draft prompt into a stronger Augment-style version."
+description = "Rewrite a draft prompt, then execute it."
 prompt = """
 Use the `prepare_augment_rewrite` tool exactly once with the user's draft below.
 
@@ -6,13 +6,24 @@ If the current conversation contains recent context that materially changes the 
 
 Treat recent conversation as optional grounding only. If the draft is already self-contained, or the surrounding chat is not clearly relevant, ignore the conversation and rewrite from the draft plus returned workspace metadata.
 
-Then follow the returned rewrite specification faithfully and produce the final rewritten prompt.
+Then follow the returned rewrite specification faithfully and draft the rewritten prompt that should drive execution.
+
+Use Prompt Leverage style structure only to the extent required by the returned specification. Keep the rewrite proportional and avoid adding sections that do not materially improve execution.
 
 After drafting the rewritten prompt, call `normalize_augment_output` exactly once on your drafted output.
 
+Treat the normalized rewritten prompt as the instruction you must now execute.
+
+After normalization:
+- carry out the work requested by the rewritten prompt in the same turn
+- inspect files, run tools, edit code, and validate results as needed
+- do not stop after showing the rewritten prompt
+- do not print the rewritten prompt unless it is genuinely useful as part of the final answer
+
 Output requirements:
-- Return only the normalized rewritten prompt.
-- Do not add commentary, labels, code fences, or metadata unless the rewritten prompt itself truly requires them.
+- Return the real task result, not the intermediate rewritten prompt.
+- Briefly summarize what you changed, verified, or found.
+- If execution is blocked, explain the blocker and include the normalized rewritten prompt only if it helps unblock the next step.
 
 Draft:
 {{args}}

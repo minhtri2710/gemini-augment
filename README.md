@@ -4,7 +4,7 @@ Gemini CLI extension that provides an explicit `/augment` command to rewrite raw
 
 ## What it does
 
-`/augment <draft>` rewrites a raw prompt into a stronger, more structured version for review in chat.
+`/augment <draft>` rewrites a raw prompt into a stronger, more structured instruction and then executes it.
 
 The rewrite preserves the following behavior:
 
@@ -15,12 +15,14 @@ The rewrite preserves the following behavior:
 - Prompt Leverage style guidance for context, constraints, verification, and done criteria
 - optional recent-conversation grounding when current chat context materially affects the rewrite
 - deterministic output normalization to strip wrappers, fences, and leading commentary
+- rewrite-then-execute flow so the command performs the task instead of stopping at the prompt
 
 ## Files
 
 - `gemini-extension.json`: Gemini extension manifest and MCP server wiring
 - `GEMINI.md`: persistent extension context
 - `commands/augment.toml`: thin `/augment` command entrypoint
+- `skills/prompt-leverage/`: bundled agent skill for deeper prompt-structuring guidance
 - `src/`: TypeScript logic ported from `pi-augment`
 - `dist/`: compiled runtime files
 
@@ -79,11 +81,30 @@ Then update `package.json`, `gemini-extension.json`, and `CHANGELOG.md` together
 
 If the current chat contains relevant context, `/augment` can use a few short recent excerpts as grounding. If the draft is already self-contained or the surrounding conversation is not relevant, the rewrite should fall back to the draft and workspace context only.
 
+`/augment` now treats the normalized rewritten prompt as an internal execution instruction. In normal use, it should do the work and return the outcome rather than echoing the rewritten prompt back to the user.
+
 ## How it works
 
 The extension uses Gemini CLI custom commands plus a TypeScript MCP server:
 
 - the rewrite happens inside Gemini CLI via `/augment`
 - deterministic augmentation logic lives in TypeScript
-- the rewritten prompt is shown in chat for review
+- the rewritten prompt is normalized and used as the execution instruction for the same turn
 - the command can include workspace context such as current directory, git branch, and short relevant conversation excerpts
+
+## Bundled agent skill
+
+The extension now bundles `skills/prompt-leverage/SKILL.md` so Gemini CLI can auto-discover the `prompt-leverage` agent skill.
+
+- base `GEMINI.md` stays focused on `/augment` behavior and tool usage
+- the bundled skill carries the heavier framework guidance for prompt upgrades, reusable templates, and hook-style prompt preprocessing
+- `/augment` still relies on the deterministic MCP rewrite spec; the skill complements that flow instead of replacing it
+
+Gemini should naturally activate the bundled skill for requests such as:
+
+- improving an existing prompt without necessarily using `/augment`
+- turning a one-off prompt into a reusable template
+- designing a prompt hook or pre-processing workflow
+- asking for clearer tool rules, verification steps, or done criteria in a prompt
+
+For normal `/augment <draft>` usage, the extension should primarily follow the deterministic MCP rewrite flow, then execute the normalized rewrite and only lean on Prompt Leverage style guidance when it materially improves the rewrite.
