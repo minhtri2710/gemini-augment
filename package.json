@@ -32,7 +32,7 @@
 		"clean": "node -e \"const fs = require('node:fs'); fs.rmSync('dist', { recursive: true, force: true }); fs.rmSync('node_modules', { recursive: true, force: true });\"",
 		"preflight": "npm run clean && npm ci && npm run format && (npm run lint || node -e \"process.exit(0)\") && npm run build && npm run typecheck",
 		"check": "npm run lint && npm run typecheck && npm run build && npm run test",
-		"postinstall": "npm run build"
+		"postinstall": "test -d src && npm run build || true"
 	},
 	"dependencies": {
 		"@modelcontextprotocol/sdk": "^1.18.1",
