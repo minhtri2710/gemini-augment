@@ -12,7 +12,7 @@ The rewrite preserves the following behavior:
 - intent-aware routing
 - auto-selection between plain rewrite and execution-contract modes
 - proportional structure for simple vs non-trivial tasks
-- Prompt Leverage style guidance for context, constraints, verification, and done criteria
+- Prompt Leverage terminology and guidance for context, constraints, verification, and done criteria
 - optional recent-conversation grounding when current chat context materially affects the rewrite
 - deterministic output normalization to strip wrappers, fences, and leading commentary
 - rewrite-then-execute flow so the command performs the task instead of stopping at the prompt
@@ -22,7 +22,6 @@ The rewrite preserves the following behavior:
 - `gemini-extension.json`: Gemini extension manifest and MCP server wiring
 - `GEMINI.md`: persistent extension context
 - `commands/augment.toml`: thin `/augment` command entrypoint
-- `skills/prompt-leverage/`: bundled agent skill for deeper prompt-structuring guidance
 - `src/`: TypeScript logic ported from `pi-augment`
 - `dist/`: compiled artifacts, including the bundled self-contained MCP runtime shipped with the extension
 
@@ -94,19 +93,4 @@ The extension uses Gemini CLI custom commands plus a TypeScript MCP server:
 - the rewritten prompt is normalized and used as the execution instruction for the same turn
 - the command can include workspace context such as current directory, git branch, and short relevant conversation excerpts
 
-## Bundled agent skill
-
-The extension now bundles `skills/prompt-leverage/SKILL.md` so Gemini CLI can auto-discover the `prompt-leverage` agent skill.
-
-- base `GEMINI.md` stays focused on `/augment` behavior and tool usage
-- the bundled skill carries the heavier framework guidance for prompt upgrades, reusable templates, and hook-style prompt preprocessing
-- `/augment` still relies on the deterministic MCP rewrite spec; the skill complements that flow instead of replacing it
-
-Gemini should naturally activate the bundled skill for requests such as:
-
-- improving an existing prompt without necessarily using `/augment`
-- turning a one-off prompt into a reusable template
-- designing a prompt hook or pre-processing workflow
-- asking for clearer tool rules, verification steps, or done criteria in a prompt
-
-For normal `/augment <draft>` usage, the extension should primarily follow the deterministic MCP rewrite flow, then execute the normalized rewrite and only lean on Prompt Leverage style guidance when it materially improves the rewrite.
+For normal `/augment <draft>` usage, the extension should follow the deterministic MCP rewrite flow, then execute the normalized rewrite using the built-in Prompt Leverage guidance in `src/`.

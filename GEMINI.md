@@ -11,7 +11,6 @@ Behavior expectations:
 - Prefer the smallest strong rewrite that materially improves execution quality.
 - For simple explanation or general prompts, keep the rewrite concise and avoid turning it into an execution plan.
 - For implementation, debugging, refactoring, review, research, docs, and test-fix prompts, compile a concise execution contract with only the sections that materially help.
-- The bundled `prompt-leverage` skill is the preferred source for deeper prompt-structuring guidance, reusable templates, and hook-style upgrades. Keep the always-loaded context focused on `/augment` behavior.
 - Treat the normalized rewritten prompt as an internal execution artifact unless showing it is genuinely useful to the user.
 - Do not stop at the rewrite stage when the normalized prompt implies executable work.
 

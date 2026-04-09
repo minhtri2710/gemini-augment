@@ -80,7 +80,6 @@ jobs:
           tar -czf "${ASSET_BASE}.tar.gz" \
             dist \
             commands \
-            skills \
             gemini-extension.json \
             package.json \
             package-lock.json \
@@ -90,7 +89,6 @@ jobs:
           zip -r "${ASSET_BASE}.zip" \
             dist \
             commands \
-            skills \
             gemini-extension.json \
             package.json \
             package-lock.json \

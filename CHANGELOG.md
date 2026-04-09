@@ -1,7 +1,7 @@
 # Changelog
 
-## [0.2.7] - 2026-04-09
+## [0.2.8] - 2026-04-09
 
 ### Removed
 
-- Remove `prompt-leverage` skill and references — focus on core commands and tools only
+- Remove bundled `prompt-leverage` skill packaging while keeping Prompt Leverage terminology and guidance in the product
