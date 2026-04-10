@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1] - 2026-04-10
+
+### Fixed
+
+- Improve multilingual prompt handling for `/augment`, including Vietnamese intent and effort detection
+- Preserve the original user draft while allowing an optional English `analysisDraft` for more reliable rewrite preparation
+
 ## [0.3.0] - 2026-04-10
 
 ### Changed
