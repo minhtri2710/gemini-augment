@@ -38,7 +38,8 @@ void test("MCP server exposes rewrite and normalization tools end to end", async
 		const prepared = await client.callTool({
 			name: "prepare_augment_rewrite",
 			arguments: {
-				draft: "Fix the login redirect bug and run tests.",
+				draft: "Sửa lỗi redirect sau khi đăng nhập và chạy test.",
+				analysisDraft: "Fix the login redirect bug and run tests.",
 				recentConversation: [
 					{ role: "user", text: "We already traced it to the auth callback." },
 					{
@@ -60,6 +61,14 @@ void test("MCP server exposes rewrite and normalization tools end to end", async
 		assert.equal(preparedJson.mode, "execution-contract");
 		assert.match(preparedJson.promptSpec, /Recent conversation:/);
 		assert.match(preparedJson.promptSpec, /auth callback/i);
+		assert.match(
+			preparedJson.promptSpec,
+			/User draft:\nSửa lỗi redirect sau khi đăng nhập và chạy test\./,
+		);
+		assert.match(
+			preparedJson.promptSpec,
+			/English working gloss:\nFix the login redirect bug and run tests\./,
+		);
 
 		const normalized = await client.callTool({
 			name: "normalize_augment_output",

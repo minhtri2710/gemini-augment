@@ -2,6 +2,10 @@ description = "Rewrite a draft prompt, then execute it."
 prompt = """
 Use the `prepare_augment_rewrite` tool exactly once with the user's draft below.
 
+Pass the original user wording as `draft` exactly as given.
+
+If the draft is not in English and a short English gloss would materially improve intent classification or rewrite quality, also pass `analysisDraft`. Treat `analysisDraft` as an internal working gloss only. Never replace or rewrite the user's original `draft` before calling the tool.
+
 If the current conversation contains recent context that materially changes the rewrite, include up to 4 short excerpts as `recentConversation` entries with `role` and `text`. Otherwise omit that field.
 
 Treat recent conversation as optional grounding only. If the draft is already self-contained, or the surrounding chat is not clearly relevant, ignore the conversation and rewrite from the draft plus returned workspace metadata.

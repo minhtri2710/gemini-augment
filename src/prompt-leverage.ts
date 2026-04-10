@@ -156,6 +156,12 @@ const DEEP_SIGNALS = [
 	/\bcritical\b/,
 	/\barchitecture\b/,
 	/\bsecurity\b/,
+	/\bcan than\b/,
+	/\bky luong\b/,
+	/\bnghiem trong\b/,
+	/\bquan trong\b/,
+	/\bkien truc\b/,
+	/\bbao mat\b/,
 ];
 
 const STANDARD_INTENTS = new Set<AugmentTaskIntent>([
@@ -171,7 +177,7 @@ export function inferIntensity(
 	draft: string,
 	intent: AugmentTaskIntent,
 ): PromptLeverageIntensity {
-	const lowered = draft.toLowerCase();
+	const lowered = normalizePromptText(draft);
 	if (DEEP_SIGNALS.some((re) => re.test(lowered))) {
 		return "Deep";
 	}
@@ -219,4 +225,13 @@ export function buildVerification(intent: AugmentTaskIntent): string {
 
 export function buildDoneCriteria(intent: AugmentTaskIntent): string {
 	return INTENT_GUIDANCE[intent].doneCriteria;
+}
+
+function normalizePromptText(text: string): string {
+	return text
+		.normalize("NFD")
+		.replace(/[\u0300-\u036f]/g, "")
+		.replace(/đ/g, "d")
+		.replace(/Đ/g, "D")
+		.toLowerCase();
 }

@@ -20,6 +20,10 @@ const EXPLAIN_PATTERNS: RegExp[] = [
 	/\bwhy does this\b/,
 	/\bwalk me through\b/,
 	/\bhelp me understand\b/,
+	/\bgiai thich\b/,
+	/\bcho toi hieu\b/,
+	/\bhoat dong nhu the nao\b/,
+	/\btai sao\b/,
 ];
 
 const STRONG_INTENT_RULES: IntentMatchRule[] = [
@@ -31,6 +35,10 @@ const STRONG_INTENT_RULES: IntentMatchRule[] = [
 			/\bfindings?\b/,
 			/\blook for issues?\b/,
 			/\bcode review\b/,
+			/\bdanh gia\b/,
+			/\bra soat\b/,
+			/\bnhan xet\b/,
+			/\bkiem tra code\b/,
 		],
 	},
 	{
@@ -42,6 +50,11 @@ const STRONG_INTENT_RULES: IntentMatchRule[] = [
 			/\badd tests?\b/,
 			/\btest fix\b/,
 			/\bfix tests?\b/,
+			/\btest loi\b/,
+			/\bkiem thu hoi quy\b/,
+			/\bthem test\b/,
+			/\bsua test\b/,
+			/\btest dang fail\b/,
 		],
 	},
 	{
@@ -58,6 +71,12 @@ const STRONG_INTENT_RULES: IntentMatchRule[] = [
 			/\bcrash(?:es|ing)?\b/,
 			/\berrors?\b/,
 			/\broot cause\b/,
+			/\bsua loi\b/,
+			/\bloi\b/,
+			/\bbug\b/,
+			/\bhong\b/,
+			/\btreo\b/,
+			/\bnguyen nhan goc\b/,
 		],
 	},
 	{
@@ -71,6 +90,10 @@ const STRONG_INTENT_RULES: IntentMatchRule[] = [
 			/\bdeduplicate\b/,
 			/\brestructure\b/,
 			/\breorganize\b/,
+			/\btai cau truc\b/,
+			/\blam gon\b/,
+			/\bdon gian hoa\b/,
+			/\bdon dep\b/,
 		],
 	},
 	{
@@ -80,6 +103,9 @@ const STRONG_INTENT_RULES: IntentMatchRule[] = [
 			/\bdocs?\b/,
 			/\bdocument(?:ation)?\b/,
 			/\busage guide\b/,
+			/\btai lieu\b/,
+			/\bhuong dan su dung\b/,
+			/\bghi chu\b/,
 		],
 	},
 	{
@@ -92,6 +118,10 @@ const STRONG_INTENT_RULES: IntentMatchRule[] = [
 			/\bfind (?:the )?best approach\b/,
 			/\bevaluate\b/,
 			/\bspike\b/,
+			/\bnghien cuu\b/,
+			/\btim hieu\b/,
+			/\bso sanh\b/,
+			/\bdanh gia giai phap\b/,
 		],
 	},
 ];
@@ -109,6 +139,13 @@ const IMPLEMENT_PATTERNS: RegExp[] = [
 	/\bupdate\b/,
 	/\bchange\b/,
 	/\bmodify\b/,
+	/\bthem\b/,
+	/\btao\b/,
+	/\bho tro\b/,
+	/\btich hop\b/,
+	/\bcap nhat\b/,
+	/\bthay doi\b/,
+	/\bdieu chinh\b/,
 ];
 
 const EXECUTION_VERB_PATTERNS: RegExp[] = [
@@ -121,6 +158,11 @@ const EXECUTION_VERB_PATTERNS: RegExp[] = [
 	/\bresearch\b/,
 	/\binvestigate\b/,
 	/\bdocument\b/,
+	/\bsua\b/,
+	/\bkiem tra\b/,
+	/\bdanh gia\b/,
+	/\bnghien cuu\b/,
+	/\btai lieu hoa\b/,
 ];
 
 const CODE_SURFACE_PATTERNS: RegExp[] = [
@@ -140,6 +182,13 @@ const CODE_SURFACE_PATTERNS: RegExp[] = [
 	/\beditor\b/,
 	/\bsession\b/,
 	/\baugment\b/,
+	/\bkho ma\b/,
+	/\btep\b/,
+	/\bham\b/,
+	/\blop\b/,
+	/\bthanh phan\b/,
+	/\bdiem cuoi api\b/,
+	/\blenh\b/,
 	/(?:^|\s)(?:\.{1,2}\/|\/)[\w./-]+/,
 	/\b[\w./-]+\.(?:ts|tsx|js|jsx|mjs|cjs|json|md|java|kt|py|go|rs|rb|php|swift|sql|yaml|yml)\b/,
 	/`[^`]+`/,
@@ -156,6 +205,10 @@ const VERIFICATION_PATTERNS: RegExp[] = [
 	/\breproduce\b/,
 	/\bconfirm\b/,
 	/\bregression\b/,
+	/\bchay test\b/,
+	/\bkiem tra\b/,
+	/\bxac nhan\b/,
+	/\bhoi quy\b/,
 ];
 
 // ── Explain-specific patterns ────────────────────────────────────────
@@ -172,12 +225,21 @@ const EXPLAIN_LEAD_PATTERNS: RegExp[] = [
 	/^help me understand\b/,
 	/^please\s+help me understand\b/,
 	/^(?:can|could|would)\s+you\s+help me understand\b/,
+	/^giai thich\b/,
+	/^hay\s+giai thich\b/,
+	/^xin\s+giai thich\b/,
+	/^tai sao\b/,
+	/^nhu the nao\b/,
+	/^cho toi hieu\b/,
 ];
 
 const EXPLAIN_WITH_ACTION_PATTERNS: RegExp[] = [
 	/\b(?:and|then|also)\s+(?:debug|fix|implement|add|build|create|support|wire up|integrate|update|change|modify|refactor|clean\s+up|cleanup|simplify|dedupe|deduplicate|restructure|reorganize|review|audit|investigate|compare|evaluate|spike|document)\b/,
 	/\b(?:and|then|also)\s+(?:run tests?|verify|check|reproduce)\b/,
 	/[.!?]\s*(?:please\s+)?(?:debug|fix|implement|add|build|create|support|wire up|integrate|update|change|modify|refactor|review|audit|investigate|compare|evaluate|document|run tests?|verify|check|reproduce)\b/,
+	/\b(?:va|roi|dong thoi)\s+(?:sua|sua loi|them|tao|ho tro|tich hop|cap nhat|thay doi|refactor|tai cau truc|danh gia|ra soat|nghien cuu|ghi tai lieu)\b/,
+	/\b(?:va|roi|dong thoi)\s+(?:chay test|kiem tra|xac nhan)\b/,
+	/[.!?]\s*(?:hay\s+)?(?:sua|sua loi|them|tao|ho tro|tich hop|cap nhat|thay doi|refactor|danh gia|nghien cuu|chay test|kiem tra|xac nhan)\b/,
 ];
 
 // ── Mode resolution ──────────────────────────────────────────────────
@@ -311,9 +373,21 @@ export function analyzeDraftIntent(
 // ── Private helpers ──────────────────────────────────────────────────
 
 function normalizeDraft(draft: string): string {
-	return draft.toLowerCase().replace(/\r\n/g, "\n").replace(/\s+/g, " ").trim();
+	return stripDiacritics(draft)
+		.toLowerCase()
+		.replace(/\r\n/g, "\n")
+		.replace(/\s+/g, " ")
+		.trim();
 }
 
 function matchesAny(text: string, patterns: RegExp[]): boolean {
 	return patterns.some((pattern) => pattern.test(text));
+}
+
+function stripDiacritics(text: string): string {
+	return text
+		.normalize("NFD")
+		.replace(/[\u0300-\u036f]/g, "")
+		.replace(/đ/g, "d")
+		.replace(/Đ/g, "D");
 }

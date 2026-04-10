@@ -40,6 +40,9 @@ export function prepareRewrite(
 			"",
 			"User draft:",
 			context.draft,
+			...(context.analysisDraft
+				? ["", "English working gloss:", context.analysisDraft]
+				: []),
 			"",
 			"Rewrite rules:",
 			buildRewriteSpec(context),

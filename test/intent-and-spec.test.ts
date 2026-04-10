@@ -21,9 +21,25 @@ void test("intent classification detects implement-oriented drafts", () => {
 	);
 });
 
+void test("intent classification detects Vietnamese implement-oriented drafts", () => {
+	assert.equal(
+		detectTaskIntent(
+			"Thêm hỗ trợ rewriteMode trong src/commands.ts và chạy test.",
+		),
+		"implement",
+	);
+});
+
 void test("intent classification detects debug-oriented drafts", () => {
 	assert.equal(
 		detectTaskIntent("Debug why /augment hangs and fix the timeout bug."),
+		"debug",
+	);
+});
+
+void test("intent classification detects Vietnamese debug-oriented drafts", () => {
+	assert.equal(
+		detectTaskIntent("Sửa lỗi redirect sau khi đăng nhập và chạy test."),
 		"debug",
 	);
 });
@@ -32,6 +48,27 @@ void test("intent classification detects explain-oriented drafts", () => {
 	assert.equal(
 		detectTaskIntent("Explain how Augment model routing works."),
 		"explain",
+	);
+});
+
+void test("intent classification detects Vietnamese explain-oriented drafts", () => {
+	assert.equal(
+		detectTaskIntent("Giải thích cách Augment model routing hoạt động."),
+		"explain",
+	);
+});
+
+void test("intent classification detects Vietnamese explain-oriented drafts without diacritics", () => {
+	assert.equal(
+		detectTaskIntent("Giai thich cach Augment model routing hoat dong."),
+		"explain",
+	);
+});
+
+void test("intent classification detects Vietnamese review-oriented drafts", () => {
+	assert.equal(
+		detectTaskIntent("Đánh giá diff này và đưa ra nhận xét."),
+		"review",
 	);
 });
 
@@ -104,6 +141,27 @@ void test("prepared rewrite includes deterministic metadata and execution rules"
 	assert.match(prepared.promptSpec, /Mode: execution-contract/);
 	assert.match(prepared.promptSpec, /root cause/i);
 	assert.match(prepared.promptSpec, /Return only the rewritten prompt/i);
+});
+
+void test("prepared rewrite preserves original draft and includes optional English analysis draft", () => {
+	const prepared = prepareRewrite(
+		createPromptContext({
+			draft: "Giải thích cách model routing hoạt động.",
+			analysisDraft: "Explain how model routing works.",
+			intent: "explain",
+			effectiveRewriteMode: "plain",
+			effortLevel: "Light",
+		}),
+	);
+
+	assert.match(
+		prepared.promptSpec,
+		/User draft:\nGiải thích cách model routing hoạt động\./,
+	);
+	assert.match(
+		prepared.promptSpec,
+		/English working gloss:\nExplain how model routing works\./,
+	);
 });
 
 void test("prepared rewrite includes recent conversation excerpts when present", () => {
@@ -182,6 +240,15 @@ void test("normalizeAugmentOutput extracts execution_contract from fenced output
 			"Here is the rewritten prompt:\n\n```xml\n<execution_contract>\nBetter prompt\n</execution_contract>\n```",
 		),
 		"Better prompt",
+	);
+});
+
+void test("normalizeAugmentOutput extracts augment-enhanced wrapper from fenced output", () => {
+	assert.equal(
+		normalizeAugmentOutput(
+			"```xml\n<augment-enhanced-prompt>\nExplain how model routing works in this codebase.\n</augment-enhanced-prompt>\n```",
+		),
+		"Explain how model routing works in this codebase.",
 	);
 });
 

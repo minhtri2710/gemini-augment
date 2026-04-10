@@ -37,6 +37,26 @@ void test("buildPromptContext resolves correct intent for different draft types"
 	assert.equal(review.intent, "review");
 });
 
+void test("buildPromptContext can analyze a non-English draft using an English analysis draft", async () => {
+	const ctx = await buildPromptContext(
+		"Giải thích cách model routing hoạt động trong dự án này",
+		[],
+		"Explain how model routing works in this project",
+	);
+
+	assert.equal(
+		ctx.draft,
+		"Giải thích cách model routing hoạt động trong dự án này",
+	);
+	assert.equal(
+		ctx.analysisDraft,
+		"Explain how model routing works in this project",
+	);
+	assert.equal(ctx.intent, "explain");
+	assert.equal(ctx.effectiveRewriteMode, "plain");
+	assert.equal(ctx.effortLevel, "Light");
+});
+
 void test("buildPromptContext infers effort level from draft signals", async () => {
 	const deep = await buildPromptContext(
 		"Carefully review the production authentication code",

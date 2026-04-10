@@ -80,7 +80,13 @@ Run `npm run build` before publishing so the bundled `dist/index.js` shipped to 
 /augment explain how model routing works in this codebase
 ```
 
+```text
+/augment sửa lỗi redirect sau khi đăng nhập và chạy test
+```
+
 If the current chat contains relevant context, `/augment` can use a few short recent excerpts as grounding. If the draft is already self-contained or the surrounding conversation is not relevant, the rewrite should fall back to the draft and workspace context only.
+
+When the draft is not in English, `/augment` should keep the original user wording as the source of truth. If needed, it may supply a short English working gloss internally via `analysisDraft` to improve intent classification and rewrite quality, but it should not replace the original draft before calling `prepare_augment_rewrite`.
 
 `/augment` now treats the normalized rewritten prompt as an internal execution instruction. In normal use, it should do the work and return the outcome rather than echoing the rewritten prompt back to the user.
 

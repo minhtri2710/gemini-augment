@@ -23,6 +23,7 @@ export interface ConversationExcerpt {
 
 export interface AugmentContextPayload {
 	draft: string;
+	analysisDraft?: string;
 	effectiveRewriteMode: AugmentRewriteMode;
 	intent: AugmentTaskIntent;
 	effortLevel: "Light" | "Standard" | "Deep";

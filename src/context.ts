@@ -14,23 +14,34 @@ export async function buildPromptContext(
 		role: "user" | "assistant";
 		text: string;
 	}> = [],
+	analysisDraftInput?: string,
 ): Promise<AugmentContextPayload> {
-	const analysis = analyzeDraftIntent(draft, "auto");
+	const analysisDraft = normalizeOptionalAnalysisDraft(analysisDraftInput);
+	const draftForAnalysis = analysisDraft ?? draft;
+	const analysis = analyzeDraftIntent(draftForAnalysis, "auto");
 	const cwd = process.cwd();
 	const gitBranch = await resolveGitBranch(cwd);
-	const effortLevel = inferIntensity(draft, analysis.intent);
+	const effortLevel = inferIntensity(draftForAnalysis, analysis.intent);
 	const recentConversation = normalizeRecentConversation(
 		recentConversationInput,
 	);
 
 	return {
 		draft,
+		...(analysisDraft ? { analysisDraft } : {}),
 		intent: analysis.intent,
 		effectiveRewriteMode: analysis.effectiveRewriteMode,
 		effortLevel,
 		recentConversation,
 		projectMetadata: gitBranch ? { cwd, gitBranch } : { cwd },
 	};
+}
+
+function normalizeOptionalAnalysisDraft(
+	analysisDraftInput?: string,
+): string | undefined {
+	const normalized = analysisDraftInput?.replace(/\r\n/g, "\n").trim();
+	return normalized || undefined;
 }
 
 function normalizeRecentConversation(

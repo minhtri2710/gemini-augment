@@ -41,6 +41,17 @@ void test("inferIntensity returns Deep when draft contains deep signal words", (
 	assert.equal(inferIntensity("Review the architecture", "general"), "Deep");
 });
 
+void test("inferIntensity returns Deep for Vietnamese high-risk signals", () => {
+	assert.equal(
+		inferIntensity("Can sua that can than vi day la production", "general"),
+		"Deep",
+	);
+	assert.equal(
+		inferIntensity("Day la thay doi nghiem trong lien quan bao mat", "general"),
+		"Deep",
+	);
+});
+
 void test("inferIntensity returns Standard for code-oriented intents without deep signals", () => {
 	assert.equal(inferIntensity("Add a login form", "implement"), "Standard");
 	assert.equal(inferIntensity("Fix the crash", "debug"), "Standard");

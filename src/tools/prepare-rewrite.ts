@@ -11,6 +11,10 @@ export function registerPrepareRewriteTool(server: McpServer) {
 				"Build a deterministic rewrite specification for turning a raw draft into a stronger Augment-style prompt.",
 			inputSchema: {
 				draft: z.string().min(1, "Draft is required."),
+				analysisDraft: z
+					.string()
+					.min(1, "Analysis draft must not be empty.")
+					.optional(),
 				recentConversation: z
 					.array(
 						z.object({
@@ -22,8 +26,12 @@ export function registerPrepareRewriteTool(server: McpServer) {
 					.optional(),
 			},
 		},
-		async ({ draft, recentConversation }) => {
-			const context = await buildPromptContext(draft, recentConversation ?? []);
+		async ({ draft, analysisDraft, recentConversation }) => {
+			const context = await buildPromptContext(
+				draft,
+				recentConversation ?? [],
+				analysisDraft,
+			);
 			const prepared = prepareRewrite(context);
 
 			return {
